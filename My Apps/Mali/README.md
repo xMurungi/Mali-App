@@ -1,4 +1,4 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+This is a Kotlin Multiplatform project targeting Android, iOS using Compose Multiplatform for the UI.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
@@ -12,3 +12,6 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
 
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+The app aims to allow tenants to easily pay their rent using M-pesa that is directly integrated into the app and download an invoice of the receipt.
+The landlord can also see who has paid the rent for the month and reduce the hustle of going through each bank statement,
