@@ -1,8 +1,7 @@
-package com.joses.mali.ui
+package com.joses.mali.landlord.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +20,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,13 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.joses.mali.ui.AddRouteDialog
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import mali.composeapp.generated.resources.Aptmnt_Image
 import mali.composeapp.generated.resources.Res
-import mali.composeapp.generated.resources.compose_multiplatform
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Serializable
@@ -78,7 +76,7 @@ fun LandlordView() {
                 shape = CircleShape
             ) {
                 Icon(
-                    imageVector = Icons.Default.Create,
+                    imageVector = Icons.Default.Add,
                     contentDescription = "Add house"
                 )
             }

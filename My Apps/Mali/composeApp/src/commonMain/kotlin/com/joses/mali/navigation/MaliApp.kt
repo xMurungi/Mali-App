@@ -7,9 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.joses.mali.ui.LandlordsScreen
+import com.joses.mali.landlord.ui.LandlordsScreen
 import com.joses.mali.ui.SelectionScreen
-import com.joses.mali.ui.TenantsScreen
+import com.joses.mali.tenants.ui.TenantsScreen
 
 @Composable
 fun MaliApp() {
