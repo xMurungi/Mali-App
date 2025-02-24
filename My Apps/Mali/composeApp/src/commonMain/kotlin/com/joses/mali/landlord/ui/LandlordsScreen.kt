@@ -14,21 +14,32 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import mali.composeapp.generated.resources.Aptmnt_Image
 import mali.composeapp.generated.resources.Res
 import mali.composeapp.generated.resources.compose_multiplatform
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Serializable
@@ -46,6 +57,9 @@ fun LandlordsScreen(
 
 @Composable
 fun LandlordView() {
+    var showAddHouseDialog by rememberSaveable { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -53,6 +67,21 @@ fun LandlordView() {
                     Text(text = "Landlord")
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    coroutineScope.launch {
+                        showAddHouseDialog = !showAddHouseDialog
+                    }
+                },
+                shape = CircleShape
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Create,
+                    contentDescription = "Add house"
+                )
+            }
         }
     ) {
        val padd = it
@@ -70,6 +99,20 @@ fun LandlordView() {
                     stuff = data
                 )
             }
+        }
+
+        if (showAddHouseDialog) {
+            AddRouteDialog(
+                onDismissRequest = {
+                    showAddHouseDialog = !showAddHouseDialog
+                },
+                onConfirmation = {
+                    showAddHouseDialog = !showAddHouseDialog
+                    coroutineScope.launch {
+//                        routeViewModel.addRoute()
+                    }
+                }
+            )
         }
 
     }
