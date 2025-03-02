@@ -53,34 +53,13 @@ fun TenantsScreen(
 ) {
     MaterialTheme {
 
-        LandlordView()
-
-        var showContent by remember { mutableStateOf(false) }
-
-        Column(
-            Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            Button(
-                onClick = {
-                    showContent = !showContent
-                    navController.navigate(
-                        SelectionScreen
-                    )
-                }
-            ) {
-                Text("Click me!")
-            }
-
-
-        }
+        TenantView()
 
     }
 }
 
 @Composable
-fun LandlordView() {
+fun TenantView() {
     var showAddHouseDialog by rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -173,14 +152,16 @@ fun TenantDetails(
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Center
             ) {
-                Row {
-                    Text(
-                        text = "Room details: "
-                    )
-                    Text(
-                        text = "${mastuff.size}"
-                    )
-                }
+                Image(
+                    painter = painterResource(Res.drawable.Aptmnt_Image),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                )
+                Text(
+                    text = "Payment History"
+                )
 
             }
         }
@@ -211,10 +192,7 @@ fun DataView(
                     text = "Amani Apartment"
                 )
                 Text(
-                    text = "14 Units"
-                )
-                Text(
-                    text = "14 Tenants"
+                    text = "House 1B"
                 )
                 Row {
                     Text(
@@ -232,9 +210,15 @@ fun DataView(
                         text = "221053"
                     )
                 }
-                Text(
-                    text = stuff
-                )
+                Button(
+                    onClick = {
+
+                    }
+                ) {
+                    Text(
+                        text = "Click to Pay"
+                    )
+                }
             }
         }
     }
@@ -242,13 +226,4 @@ fun DataView(
 
 val mastuff = listOf(
     "rwer",
-    "ewre",
-    "ihoeow",
-    "rwer",
-    "ewre",
-    "ihoeow",
-    "rwer",
-    "ewre",
-    "ihoeow",
-    "rwer"
 )
