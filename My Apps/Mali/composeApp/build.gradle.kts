@@ -35,6 +35,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -59,6 +61,14 @@ kotlin {
 //            Navigation
             implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha10")
 
+//            Ktor
+            implementation(libs.bundles.ktor)
+            implementation("io.ktor:ktor-client-cio:2.3.2")
+
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
+        }
+        nativeMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }
