@@ -34,8 +34,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.joses.mali.tenants.network.MpesaStkPushClient
+import com.joses.mali.tenants.network.createHttpClient
 import com.joses.mali.ui.AddRouteDialog
-import com.joses.mali.ui.SelectionScreen
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import mali.composeapp.generated.resources.Aptmnt_Image
@@ -49,17 +50,22 @@ object TenantsScreen
 @Composable
 @Preview
 fun TenantsScreen(
-    navController: NavController
+    navController: NavController,
+    mpesaStkPushClient: MpesaStkPushClient
 ) {
     MaterialTheme {
 
-        TenantView()
+        TenantView(
+            mpesaStkPushClient = mpesaStkPushClient
+        )
 
     }
 }
 
 @Composable
-fun TenantView() {
+fun TenantView(
+    mpesaStkPushClient: MpesaStkPushClient
+) {
     var showAddHouseDialog by rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -99,7 +105,8 @@ fun TenantView() {
 
             items(mastuff) { data ->
                 DataView(
-                    stuff = data
+                    stuff = data,
+                    mpesaStkPushClient = mpesaStkPushClient
                 )
             }
         }
@@ -170,8 +177,11 @@ fun TenantDetails(
 
 @Composable
 fun DataView(
-    stuff: String
+    stuff: String,
+    mpesaStkPushClient: MpesaStkPushClient
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,7 +222,17 @@ fun DataView(
                 }
                 Button(
                     onClick = {
+                        coroutineScope.launch {
+                            try {
+                                // Await the completion of mpesaStkPushClient.sendStkPush
+                                println(mpesaStkPushClient.initiateStkPush())
 
+                            } catch (e: Exception) {
+                                println(e)
+                            } finally {
+
+                            }
+                        }
                     }
                 ) {
                     Text(
