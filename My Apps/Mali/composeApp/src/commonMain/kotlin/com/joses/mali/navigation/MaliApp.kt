@@ -8,11 +8,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.joses.mali.landlord.ui.LandlordsScreen
+import com.joses.mali.tenants.network.MpesaStkPushClient
 import com.joses.mali.ui.SelectionScreen
 import com.joses.mali.tenants.ui.TenantsScreen
 
 @Composable
-fun MaliApp() {
+fun MaliApp(
+    mpesaStkPushClient: MpesaStkPushClient
+) {
 
     val navController = rememberNavController()
     val startDestinationString = SelectionScreen
@@ -38,7 +41,8 @@ fun MaliApp() {
 
         composable<TenantsScreen> {
             TenantsScreen(
-                navController = navController
+                navController = navController,
+                mpesaStkPushClient = mpesaStkPushClient
             )
         }
 
