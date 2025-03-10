@@ -52,7 +52,6 @@ suspend fun generateAccessToken(consumerKey: String, consumerSecret: String): To
 }
 
 
-
 // Base64 encoding function for KMP
 fun String.encodeBase64(): String {
     val bytes = this.encodeToByteArray()
