@@ -25,3 +25,4 @@ captures
 ../../projectsArc/
 ../../release/
 iosApp/iosApp/GoogleService-Info.plist
+composeApp/google-services.json
