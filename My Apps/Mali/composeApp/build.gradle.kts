@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
 //    Kotlin Serialization
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.googleServices)
 }
 
 kotlin {
@@ -37,6 +38,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.ktor.client.okhttp)
+            implementation(project.dependencies.platform(libs.android.firebase.bom))
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -66,6 +68,14 @@ kotlin {
             implementation("io.ktor:ktor-client-cio:2.3.2")
 
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
+
+            implementation(libs.kotlinx.coroutines.core)
+
+//            Firebase
+            implementation(libs.firebase.auth)
+            implementation(libs.gitlive.firebase.firestore)
+
+
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -110,6 +120,7 @@ android {
     }
 }
 dependencies {
-    implementation(libs.androidx.material3.android)
-    implementation(libs.androidx.foundation.layout.android)
+//    implementation(libs.androidx.material3.android)
+//    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.runtime.android)
 }
