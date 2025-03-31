@@ -1,7 +1,6 @@
 package com.joses.mali.tenants.network
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
@@ -11,8 +10,8 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -35,7 +34,7 @@ class MpesaStkPushClient(
         consumerKey: String = "qDHQ5qZUHUIhjklabkqHzatJVUiMoUGEQou9v94ZfTXKSilt",
         consumerSecret: String = "cOvEaGusEPnEgsNYDdGRrnJvDSYjt94MNqcrlP458gfBXmGbaPLgO5JASyUGT6vK",
         businessShortCode: Int = 174379,
-        passkey: String = "bfb279f9aa9bdbcf158e97dd71a467cd2b0cdeedfcccd2a83590e004d5e04bed"
+        passkey: String = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
     ) {
         val client = HttpClient(CIO) {
             install(ContentNegotiation) {
@@ -70,16 +69,17 @@ class MpesaStkPushClient(
                 Amount = 1,
                 PartyA = 254708374149,
                 PartyB = businessShortCode,
-                PhoneNumber = 254796478541,
+                PhoneNumber = 254798276941,
                 CallBackURL = "https://mydomain.com/path",
-                AccountReference = "TestPayment",
-                TransactionDesc = "Payment of Test Service"
+                AccountReference = "Mali App",
+                TransactionDesc = "Payment of Rent"
             )
 
             // Step 5: Make STK Push Request
             val stkPushResponse: HttpResponse = client.post("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest") {
                 contentType(ContentType.Application.Json)
                 headers {
+                    append("Content-Type", "application/json")
                     append(HttpHeaders.Authorization, "Bearer ${accessTokenResponse.access_token}")
                 }
                 setBody(stkRequest)
