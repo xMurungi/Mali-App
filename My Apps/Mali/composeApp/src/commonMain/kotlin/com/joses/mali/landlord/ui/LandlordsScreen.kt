@@ -12,18 +12,27 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -32,7 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.joses.mali.ui.AddRouteDialog
+import com.joses.mali.landlord.domain.LandlordUser
+import com.joses.mali.landlord.repository.LandlordRepository
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import mali.composeapp.generated.resources.Aptmnt_Image
@@ -41,91 +51,155 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Serializable
-object LandlordsScreen
+data class LandlordsScreenRoute(
+    val name: String
+)
 
 @Composable
 @Preview
 fun LandlordsScreen(
-    navController: NavController
+    navController: NavController,
+    name: String
 ) {
     MaterialTheme {
-        LandlordView()
+        val landlordRepository = remember { LandlordRepository() }
+        val scope = rememberCoroutineScope()
+
+        LandlordView(
+            name = name,
+            navController = navController,
+            addApartment = { scope.launch { landlordRepository.addApartment(it) } },
+            updateApartment = { scope.launch { landlordRepository.updateApartment(it) } },
+            deleteApartment = { scope.launch { landlordRepository.deleteApartment(it) } },
+        )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LandlordView() {
-    var showAddHouseDialog by rememberSaveable { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
+fun LandlordView(
+    name: String,
+    navController: NavController,
+    addApartment: (LandlordUser) -> Unit,
+    updateApartment: (LandlordUser) -> Unit,
+    deleteApartment: (LandlordUser) -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var selectedUser by remember { mutableStateOf<LandlordUser?>(null) }
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    val landlordRepository = remember { LandlordRepository() }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(text = "Landlord")
-                }
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+
+                },
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    coroutineScope.launch {
-                        showAddHouseDialog = !showAddHouseDialog
-                    }
-                },
-                shape = CircleShape
-            ) {
+            FloatingActionButton(onClick = { showBottomSheet = true }) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add house"
+                    contentDescription = "Add"
                 )
             }
         }
     ) {
-       val padd = it
 
-        LazyColumn {
+        val apartments by landlordRepository.getApartments().collectAsState(emptyList())
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             item {
                 LandLordDetails(
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(10.dp),
+                    apartments = apartments,
+                    name = name
                 )
             }
 
-            items(mastuff) { data ->
-                DataView(
-                    stuff = data
+            items(apartments) { apartment ->
+                ApartmentDetails(
+                    apartment = apartment,
+                    navController = navController,
+                    clicked = {
+                        selectedUser = it
+                        showBottomSheet = true
+                    }
                 )
             }
         }
+    }
 
-        if (showAddHouseDialog) {
-            AddRouteDialog(
-                onDismissRequest = {
-                    showAddHouseDialog = !showAddHouseDialog
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+            },
+            sheetState = sheetState
+        ) {
+            BottomSheetLandlordContent(
+                user = selectedUser,
+                onSave = { user ->
+                    scope.launch {
+                        if (selectedUser == null) {
+                            addApartment(user)
+                        } else {
+                            updateApartment(user)
+                        }
+                        sheetState.hide()
+                    }.invokeOnCompletion {
+                        showBottomSheet = false
+                        selectedUser = null
+                    }
                 },
-                onConfirmation = {
-                    showAddHouseDialog = !showAddHouseDialog
-                    coroutineScope.launch {
-//                        routeViewModel.addRoute()
+                onDelete = { user ->
+                    scope.launch {
+                        user?.let { deleteApartment(it) }
+                        sheetState.hide()
+                    }.invokeOnCompletion {
+                        showBottomSheet = false
+                        selectedUser = null
                     }
                 }
             )
         }
-
     }
 }
 
 @Composable
 fun LandLordDetails(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    apartments: List<LandlordUser>,
+    name: String
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(16.dp),
         shape = RoundedCornerShape(20.dp),
-        elevation = 10.dp
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
     ) {
         Row(
             modifier = modifier
@@ -139,7 +213,7 @@ fun LandLordDetails(
                         .clip(CircleShape)
                 )
                 Text(
-                    text = "John Doe"
+                    text = name
                 )
             }
             Column(
@@ -147,12 +221,14 @@ fun LandLordDetails(
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Center
             ) {
-                Row {
+                Row(
+                    modifier = modifier
+                ) {
                     Text(
                         text = "Properties: "
                     )
                     Text(
-                        text = "${mastuff.size}"
+                        text = "${apartments.size}"
                     )
                 }
 
@@ -161,68 +237,4 @@ fun LandLordDetails(
     }
 }
 
-@Composable
-fun DataView(
-   stuff: String
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(50.dp),
-        shape = RoundedCornerShape(20.dp),
-    ) {
-        Column {
-            Image(
-                painterResource(Res.drawable.Aptmnt_Image),
-                contentDescription = "Apartment",
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
-            )
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Text(
-                    text = "Amani Apartment"
-                )
-                Text(
-                    text = "14 Units"
-                )
-                Text(
-                    text = "14 Tenants"
-                )
-                Row {
-                    Text(
-                        text = "PayBill: "
-                    )
-                    Text(
-                        text = "247247"
-                    )
-                }
-                Row {
-                    Text(
-                        text = "Accnt. No.: "
-                    )
-                    Text(
-                        text = "221053"
-                    )
-                }
-                Text(
-                    text = stuff
-                )
-            }
-        }
-    }
-}
 
-val mastuff = listOf(
-    "rwer",
-    "ewre",
-    "ihoeow",
-    "rwer",
-    "ewre",
-    "ihoeow",
-    "rwer",
-    "ewre",
-    "ihoeow",
-    "rwer"
-)
