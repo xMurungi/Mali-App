@@ -19,7 +19,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -28,6 +28,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            linkerOpts("-ObjC")
         }
     }
     
@@ -39,11 +40,13 @@ kotlin {
 
             implementation(libs.ktor.client.okhttp)
             implementation(project.dependencies.platform(libs.android.firebase.bom))
+            implementation("com.itextpdf:itext7-core:7.2.2")
+//            implementation("com.lowagie:itext:2.1.7")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -75,7 +78,9 @@ kotlin {
             implementation(libs.firebase.auth)
             implementation(libs.gitlive.firebase.firestore)
 
-
+//            Auth
+            implementation("io.github.mirzemehdi:kmpauth-google:2.0.0")
+            implementation("io.github.mirzemehdi:kmpauth-uihelper:2.0.0")
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -101,6 +106,12 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/LICENSE.txt"
+            excludes += "META-INF/NOTICE.txt"
+            excludes += "META-INF/library_name.kotlin_module"
         }
     }
     buildTypes {
@@ -123,4 +134,5 @@ dependencies {
 //    implementation(libs.androidx.material3.android)
 //    implementation(libs.androidx.foundation.layout.android)
     implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.material3.android)
 }
