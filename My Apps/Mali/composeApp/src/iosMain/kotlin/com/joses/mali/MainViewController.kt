@@ -14,6 +14,10 @@ fun MainViewController() = ComposeUIViewController {
                     Darwin.create()
                 )
             )
-        }
+        },
+        onGeneratePdf = {},
+        generateApartmentPaymentReport = {},
+        onGeneratePastTenantPdf = {},
+        generateTenantPdf = {},
     )
 }
